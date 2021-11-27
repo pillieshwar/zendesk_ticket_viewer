@@ -51,32 +51,31 @@ public class TicketService {
 
 		} catch (Exception e) {
 			System.out.println(e + " ERROR: Ooops! Something went wrong fetching your ticket(s).");
-//			return "ERROR: Ooops! Something went wrong fetching your ticket(s).";
+			return e.toString();
 		}
 		return stringOutput;
 	}
 
-	public List<Tickets> getAllTickets(String page, String quarter) {
-		String result = apiAuthentication("eshwarnag.pilli@wsu.edu", "Eswar123$",
-				"https://zcceshwar.zendesk.com/api/v2/tickets.json?page="+page);
+	public List<Tickets> getAllTickets(String page, String quarter, Credentials credentials) {
+		String result = apiAuthentication(credentials.getUsername(), credentials.getPassword(),
+				"https://"+credentials.getSubdomain()+".zendesk.com/api/v2/tickets.json?page=" + page);
 
 		List<Tickets> multipleTicketsList = new ArrayList<>();
+		List<Tickets> errorList = new ArrayList<>();
 
 		try {
 			JSONArray ticketsList = new JSONArray();
 			JSONObject jsonObject = new JSONObject(result);
 			ticketsList = jsonObject.getJSONArray("tickets");
-
+//			System.out.println("ticketsList" + result);
 			String dateStr = "";
 			Date date = new Date();
-			
-			int start = ((Integer.parseInt(quarter)-1)*25);
-			int end = Math.min((((Integer.parseInt(quarter))*25)), ticketsList.length());
-			
-			for (int i = start; i <end; i++) {
 
+			int start = ((Integer.parseInt(quarter) - 1) * 25);
+			int end = Math.min((((Integer.parseInt(quarter)) * 25)), ticketsList.length());
+
+			for (int i = start; i < end; i++) {
 				Tickets multipleTicket = new Tickets();
-
 				try {
 					JSONObject ticketObject = ticketsList.getJSONObject(i);
 
@@ -99,23 +98,26 @@ public class TicketService {
 				}
 			}
 		} catch (Exception e) {
-			System.out.println(e + "ERROR: Ooops! Something went wrong fetching your ticket(s).");
-//			return "ERROR: Ooops! Something went wrong fetching your ticket(s).";
+			System.out.println(e + "ERROR: Ooops! Error fetching ticket(s).");
+			Tickets errorTicket = new Tickets();
+			errorTicket.setError(e.toString());
+			errorList.add(errorTicket);
+			return errorList;
 		}
 		return multipleTicketsList;
 	}
 
-	public String getTicketCount() {
+	public String getTicketCount(Credentials credentials) {
 
-		String result = apiAuthentication("eshwarnag.pilli@wsu.edu", "Eswar123$",
-				"https://zcceshwar.zendesk.com/api/v2/tickets/count.json");
+		String result = apiAuthentication(credentials.getUsername(), credentials.getPassword(),
+				"https://"+credentials.getSubdomain()+".zendesk.com/api/v2/tickets/count.json");
 		JSONObject count = new JSONObject();
-		
+
 		try {
 			JSONObject jsonObject = new JSONObject(result);
 			count = jsonObject.getJSONObject("count");
 		} catch (Exception e) {
-			System.out.println(e+ " ERROR: Ooops! Something went wrong fetching your ticket(s).");
+			System.out.println(e + " ERROR: Ooops! Something went wrong fetching your ticket(s).");
 		}
 		return count.toString();
 	}

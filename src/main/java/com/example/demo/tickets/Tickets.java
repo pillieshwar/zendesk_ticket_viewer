@@ -9,6 +9,7 @@ public class Tickets {
 	private String priority;
 	private String requester_id;
 	private String updated_at;
+	private String error;
 
 	public String getId() {
 		return id;
@@ -66,10 +67,19 @@ public class Tickets {
 		this.requester_id = requester_id;
 	}
 
+	public String getError() {
+		return error;
+	}
+
+	public void setError(String error) {
+		this.error = error;
+	}
+
 	@Override
 	public String toString() {
 		return "Tickets [id=" + id + ", subject=" + subject + ", description=" + description + ", status=" + status
-				+ ", priority=" + priority + ", requester_id=" + requester_id + ", updated_at=" + updated_at + "]";
+				+ ", priority=" + priority + ", requester_id=" + requester_id + ", updated_at=" + updated_at
+				+ ", error=" + error + "]";
 	}
 
 }
