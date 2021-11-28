@@ -18,31 +18,23 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = "tickets")
 public class TicketsController {
 
-	private final TicketService ticketService;
-	Credentials cred = new Credentials();
-
+	private TicketServiceImpl ticketService;
+	Credentials credentials = new Credentials();
 	@Autowired
-	public TicketsController(TicketService ticketService) {
+	public TicketsController(TicketServiceImpl ticketService) {
 		this.ticketService = ticketService;
 	}
 
 	@CrossOrigin
-	@PostMapping(value = "/pp", consumes = { MediaType.APPLICATION_JSON_VALUE,
+	@PostMapping(value = "/login", consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE }, produces = { MediaType.APPLICATION_JSON_VALUE,
 					MediaType.APPLICATION_XML_VALUE })
-	public String pp(@RequestBody Credentials credentials) {
-		cred.setUsername(credentials.getUsername());
-		cred.setPassword(credentials.getPassword());
-		cred.setSubdomain(credentials.getSubdomain());
-		return "success";
-	}
-
-	@CrossOrigin
-	@GetMapping("/postpage")
-	@ResponseBody
-	public String pmapping(@RequestParam(required = false) String page, @RequestParam(required = false) String page2) {
-		System.out.println(page + page2);
-		return page + page2;
+	public String login(@RequestBody Credentials credential) {
+		credentials.setUsername(credential.getUsername());
+		credentials.setPassword(credential.getPassword());
+		credentials.setSubdomain(credential.getSubdomain());
+		String connectionStatus = ticketService.setCredentials(credentials);
+		return connectionStatus;
 	}
 
 	@CrossOrigin
@@ -50,26 +42,27 @@ public class TicketsController {
 	@ResponseBody
 	public List<Tickets> getQuarterTickets(@RequestParam(required = false) String page,
 			@RequestParam(required = false) String quarter) {
-		return ticketService.getQuarterTickets(page, quarter, cred);
+		return ticketService.getQuarterTickets(page, quarter);
 	}
 
 	@CrossOrigin
 	@GetMapping("/ticketCount")
 	public String getTicketCount() {
-		return ticketService.getTicketCount(cred);
+		return ticketService.getTicketCount();
 	}
 
 	@CrossOrigin
 	@GetMapping("/singleTicket")
 	@ResponseBody
 	public Tickets getSingleTickets(@RequestParam(required = false) int ticketId) {
-		return ticketService.getSingleTicket(ticketId, cred);
+		return ticketService.getSingleTicket(ticketId);
 	}
-	
+
 	@CrossOrigin
 	@GetMapping("/all")
 	@ResponseBody
 	public List<Tickets> getAllTickets() throws JSONException {
-		 return ticketService.getAllTickets(cred);
+		return ticketService.getAllTickets();
 	}
+
 }

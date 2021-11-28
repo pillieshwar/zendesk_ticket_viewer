@@ -75,11 +75,11 @@ public class Tickets {
 		this.error = error;
 	}
 
-	@Override
-	public String toString() {
-		return "Tickets [id=" + id + ", subject=" + subject + ", description=" + description + ", status=" + status
-				+ ", priority=" + priority + ", requester_id=" + requester_id + ", updated_at=" + updated_at
-				+ ", error=" + error + "]";
-	}
+//	@Override
+//	public String toString() {
+//		return "Tickets [id=" + id + ", subject=" + subject + ", description=" + description + ", status=" + status
+//				+ ", priority=" + priority + ", requester_id=" + requester_id + ", updated_at=" + updated_at
+//				+ ", error=" + error + "]";
+//	}
 
 }
