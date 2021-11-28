@@ -3,6 +3,7 @@ package com.example.demo.tickets;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,11 +46,11 @@ public class TicketsController {
 	}
 
 	@CrossOrigin
-	@GetMapping("/all")
+	@GetMapping("/quarterall")
 	@ResponseBody
-	public List<Tickets> getAllTickets(@RequestParam(required = false) String page,
+	public List<Tickets> getQuarterTickets(@RequestParam(required = false) String page,
 			@RequestParam(required = false) String quarter) {
-		return ticketService.getAllTickets(page, quarter, cred);
+		return ticketService.getQuarterTickets(page, quarter, cred);
 	}
 
 	@CrossOrigin
@@ -63,5 +64,12 @@ public class TicketsController {
 	@ResponseBody
 	public Tickets getSingleTickets(@RequestParam(required = false) int ticketId) {
 		return ticketService.getSingleTicket(ticketId, cred);
+	}
+	
+	@CrossOrigin
+	@GetMapping("/all")
+	@ResponseBody
+	public List<Tickets> getAllTickets() throws JSONException {
+		 return ticketService.getAllTickets(cred);
 	}
 }

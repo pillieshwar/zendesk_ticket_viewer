@@ -14,6 +14,7 @@ import java.util.Locale;
 import java.util.Scanner;
 
 import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 
@@ -55,7 +56,7 @@ public class TicketService {
 		return stringOutput;
 	}
 
-	public List<Tickets> getAllTickets(String page, String quarter, Credentials credentials) {
+	public List<Tickets> getQuarterTickets(String page, String quarter, Credentials credentials) {
 		String result = apiAuthentication(credentials.getUsername(), credentials.getPassword(),
 				"https://" + credentials.getSubdomain() + ".zendesk.com/api/v2/tickets.json?page=" + page);
 
@@ -159,5 +160,66 @@ public class TicketService {
 			System.out.println(e + " ERROR: Ooops! Something went wrong fetching your ticket(s).");
 		}
 		return count.toString();
+	}
+
+	public List<Tickets> getAllTickets(Credentials credentials) throws JSONException {
+
+		String pageCountStr = getTicketCount(credentials);
+		JSONObject jsonPageObject = new JSONObject(pageCountStr);
+		int pageCountVal = 0;
+		if (jsonPageObject.getString("value") != null) {
+			pageCountVal = (int) Math.ceil(Integer.parseInt(jsonPageObject.getString("value")) / 100);
+			System.out.println("dddd " + pageCountVal);
+		}
+
+		List<Tickets> multipleTicketsList = new ArrayList<>();
+		List<Tickets> errorList = new ArrayList<>();
+
+		String dateStr = "";
+		Date date = new Date();
+		for (int j = 1; j <= pageCountVal; j++) {
+
+			String result = apiAuthentication(credentials.getUsername(), credentials.getPassword(),
+					"https://" + credentials.getSubdomain() + ".zendesk.com/api/v2/tickets.json?page=" + j);
+
+			try {
+				JSONArray ticketsList = new JSONArray();
+				JSONObject jsonObject = new JSONObject(result);
+				ticketsList = jsonObject.getJSONArray("tickets");
+
+				for (int i = 0; i < ticketsList.length(); i++) {
+
+					Tickets multipleTicket = new Tickets();
+					try {
+						JSONObject ticketObject = ticketsList.getJSONObject(i);
+
+						multipleTicket.setId(ticketObject.getString("id"));
+						multipleTicket.setSubject(ticketObject.getString("subject"));
+						multipleTicket.setDescription(ticketObject.getString("description"));
+						multipleTicket.setStatus(ticketObject.getString("status"));
+						multipleTicket.setPriority(ticketObject.getString("priority"));
+						multipleTicket.setRequester_id(ticketObject.getString("requester_id"));
+						date = dateFormat.parse(ticketsList.getJSONObject(i).getString("updated_at"));
+						dateStr = date.toString();
+						multipleTicket.setUpdated_at(dateStr);
+
+						multipleTicketsList.add(multipleTicket);
+
+					} catch (ParseException e) {
+						System.out.println(
+								"ERROR: There was an issue regarding the last updated date on one of the tickets. Skipping Ticket...");
+						continue;
+					}
+				}
+
+			} catch (Exception e) {
+				System.out.println(e + "ERROR: Ooops! Error fetching ticket(s).");
+				Tickets errorTicket = new Tickets();
+				errorTicket.setError(e.toString());
+				errorList.add(errorTicket);
+				return errorList;
+			}
+		}
+		return multipleTicketsList;
 	}
 }
