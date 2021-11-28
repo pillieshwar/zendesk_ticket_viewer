@@ -26,7 +26,6 @@ public class TicketService {
 		Scanner sc;
 
 		String basicAuth = "";
-		String ticketsJSON = "";
 		String stringOutput = "";
 		URL url;
 
@@ -58,7 +57,7 @@ public class TicketService {
 
 	public List<Tickets> getAllTickets(String page, String quarter, Credentials credentials) {
 		String result = apiAuthentication(credentials.getUsername(), credentials.getPassword(),
-				"https://"+credentials.getSubdomain()+".zendesk.com/api/v2/tickets.json?page=" + page);
+				"https://" + credentials.getSubdomain() + ".zendesk.com/api/v2/tickets.json?page=" + page);
 
 		List<Tickets> multipleTicketsList = new ArrayList<>();
 		List<Tickets> errorList = new ArrayList<>();
@@ -107,10 +106,50 @@ public class TicketService {
 		return multipleTicketsList;
 	}
 
+	public Tickets getSingleTicket(int ticketId, Credentials credentials) {
+		String result = apiAuthentication(credentials.getUsername(), credentials.getPassword(),
+				"https://" + credentials.getSubdomain() + ".zendesk.com/api/v2/tickets/" + ticketId + ".json");
+
+		JSONObject ticketObject = new JSONObject();
+		Tickets singleTicket = new Tickets();
+		try {
+
+			JSONObject jsonObject = new JSONObject(result);
+			ticketObject = jsonObject.getJSONObject("ticket");
+			String dateStr = "";
+			Date date = new Date();
+
+			try {
+				singleTicket.setId(ticketObject.getString("id"));
+				singleTicket.setSubject(ticketObject.getString("subject"));
+				singleTicket.setDescription(ticketObject.getString("description"));
+				singleTicket.setStatus(ticketObject.getString("status"));
+				singleTicket.setPriority(ticketObject.getString("priority"));
+				singleTicket.setRequester_id(ticketObject.getString("requester_id"));
+				date = dateFormat.parse(ticketObject.getString("updated_at"));
+				dateStr = date.toString();
+				singleTicket.setUpdated_at(dateStr);
+			} catch (ParseException e) {
+				System.out.println(
+						"ERROR: There was an issue regarding the last updated date on one of the tickets. Skipping Ticket...");
+//				continue;
+			}
+
+		} catch (
+
+		Exception e) {
+			System.out.println(e + "ERROR: Ooops! Error fetching ticket(s).");
+			Tickets errorTicket = new Tickets();
+			errorTicket.setError(e.toString());
+			return errorTicket;
+		}
+		return singleTicket;
+	}
+
 	public String getTicketCount(Credentials credentials) {
 
 		String result = apiAuthentication(credentials.getUsername(), credentials.getPassword(),
-				"https://"+credentials.getSubdomain()+".zendesk.com/api/v2/tickets/count.json");
+				"https://" + credentials.getSubdomain() + ".zendesk.com/api/v2/tickets/count.json");
 		JSONObject count = new JSONObject();
 
 		try {
