@@ -27,8 +27,9 @@ export default function RightSideBar(props) {
         console.log(err);
       }
     }
+
     fetchData();
-  }, [props]);
+  }, [props.ticketId]);
 
   return (
     <div>

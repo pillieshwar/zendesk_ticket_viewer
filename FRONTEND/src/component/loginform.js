@@ -6,7 +6,6 @@ import {
   FormControl,
   InputRightElement,
   Input,
-  useToast,
 } from "@chakra-ui/react";
 import Dashboard from "./dashboard";
 
@@ -20,7 +19,9 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const [subdomain, setSubDomain] = useState("");
 
-  async function handleSubmit() {
+  async function handleSubmit(e) {
+    e.preventDefault();
+    debugger;
     const params = JSON.stringify({
       username: username,
       password: password,
@@ -28,19 +29,24 @@ export default function LoginForm() {
     });
 
     try {
-      const res = await axios
-        .post("http://127.0.0.1:8080/tickets/login", params, {
+      const res = await axios.post(
+        "http://127.0.0.1:8080/tickets/login",
+        params,
+        {
           headers: {
             "content-type": "application/json",
             "Access-Control-Allow-Origin": "*",
           },
-        })
-        .then(setConnectionStatus(true));
+        }
+      );
+      console.log(res.data);
+      if (res.data === "success") {
+        setConnectionStatus(true);
+      }
     } catch (err) {
       console.log(err);
     }
   }
-  const toast = useToast();
   return (
     <div>
       {connectionStatus ? (
@@ -50,7 +56,7 @@ export default function LoginForm() {
           <GridItem colSpan={4} bg="white"></GridItem>
           <GridItem pt={10} pb={5} colSpan={4}>
             <Heading size="md">Connect to Zendesk Account</Heading>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={(e) => handleSubmit(e)}>
               <FormControl mt={5} id="username">
                 <Input
                   bg="white"
@@ -85,21 +91,7 @@ export default function LoginForm() {
                 />
               </FormControl>
 
-              <Button
-                mt={5}
-                colorScheme="blue"
-                mr={3}
-                type="submit"
-                onClick={() =>
-                  toast({
-                    title: "Login Again! Refresh page",
-                    description: "Enter correct credentials to get data",
-                    status: "success",
-                    duration: 7000,
-                    isClosable: true,
-                  })
-                }
-              >
+              <Button mt={5} colorScheme="blue" mr={3} type="submit">
                 Connect
               </Button>
             </form>

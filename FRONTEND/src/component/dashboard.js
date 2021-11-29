@@ -46,11 +46,7 @@ export default function Dashboard() {
   }
 
   function allPages() {
-    if (viewAllPages === false) {
-      setViewAllPages(true);
-    } else {
-      setViewAllPages(false);
-    }
+    setViewAllPages(!viewAllPages);
   }
 
   const arr = [];

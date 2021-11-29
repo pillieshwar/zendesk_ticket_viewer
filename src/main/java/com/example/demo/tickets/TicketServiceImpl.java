@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class TicketServiceImpl implements TicketService {
 	private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
-	Credentials credentials = new Credentials();
+	static Credentials credentials = new Credentials();
 
 	@Override
 	public String setCredentials(Credentials credential) {
@@ -36,17 +36,21 @@ public class TicketServiceImpl implements TicketService {
 		try {
 
 			JSONObject jsonObject = new JSONObject(result);
-			ticketObject = jsonObject.getJSONObject("user");
-			if(ticketObject.getString("id")!=null && ticketObject.getString("id")!="") {
-				return "true";
-			}
-			else {
+
+			if (jsonObject.has("user")) {
+				ticketObject = jsonObject.getJSONObject("user");
+				if (ticketObject.getString("id") != null && ticketObject.getString("id") != "") {
+					System.out.println(ticketObject.get("id"));
+					return "success";
+				} else {
+					return "false";
+				}
+			} else {
 				return "false";
 			}
-
 		} catch (Exception e) {
-			System.out.println(e + "ERROR: Ooops! Error fetching ticket(s).");
-			return e.toString();
+			System.out.println(e + "ERROR: Unable to fetch user details/ enter correct credentials");
+			return "false";
 		}
 	}
 
@@ -95,39 +99,41 @@ public class TicketServiceImpl implements TicketService {
 		try {
 			JSONArray ticketsList = new JSONArray();
 			JSONObject jsonObject = new JSONObject(result);
-			ticketsList = jsonObject.getJSONArray("tickets");
+			if (jsonObject.has("tickets")) {
+				ticketsList = jsonObject.getJSONArray("tickets");
 
-			String dateStr = "";
-			Date date = new Date();
+				String dateStr = "";
+				Date date = new Date();
 
-			int start = ((Integer.parseInt(quarter) - 1) * 25);
-			int end = Math.min((((Integer.parseInt(quarter)) * 25)), ticketsList.length());
+				int start = ((Integer.parseInt(quarter) - 1) * 25);
+				int end = Math.min((((Integer.parseInt(quarter)) * 25)), ticketsList.length());
 
-			for (int i = start; i < end; i++) {
-				Tickets multipleTicket = new Tickets();
-				try {
-					JSONObject ticketObject = ticketsList.getJSONObject(i);
+				for (int i = start; i < end; i++) {
+					Tickets multipleTicket = new Tickets();
+					try {
+						JSONObject ticketObject = ticketsList.getJSONObject(i);
 
-					multipleTicket.setId(ticketObject.getString("id"));
-					multipleTicket.setSubject(ticketObject.getString("subject"));
-					multipleTicket.setDescription(ticketObject.getString("description"));
-					multipleTicket.setStatus(ticketObject.getString("status"));
-					multipleTicket.setPriority(ticketObject.getString("priority"));
-					multipleTicket.setRequester_id(ticketObject.getString("requester_id"));
-					date = dateFormat.parse(ticketsList.getJSONObject(i).getString("updated_at"));
-					dateStr = date.toString();
-					multipleTicket.setUpdated_at(dateStr);
+						multipleTicket.setId(ticketObject.getString("id"));
+						multipleTicket.setSubject(ticketObject.getString("subject"));
+						multipleTicket.setDescription(ticketObject.getString("description"));
+						multipleTicket.setStatus(ticketObject.getString("status"));
+						multipleTicket.setPriority(ticketObject.getString("priority"));
+						multipleTicket.setRequester_id(ticketObject.getString("requester_id"));
+						date = dateFormat.parse(ticketsList.getJSONObject(i).getString("updated_at"));
+						dateStr = date.toString();
+						multipleTicket.setUpdated_at(dateStr);
 
-					multipleTicketsList.add(multipleTicket);
+						multipleTicketsList.add(multipleTicket);
 
-				} catch (ParseException e) {
-					System.out.println(
-							"ERROR: There was an issue regarding the last updated date on one of the tickets. Skipping Ticket...");
-					continue;
+					} catch (ParseException e) {
+						System.out.println(
+								"ERROR: There was an issue regarding the last updated date on one of the tickets. Skipping Ticket...");
+						continue;
+					}
 				}
 			}
 		} catch (Exception e) {
-			System.out.println(e + "ERROR: Ooops! Error fetching ticket(s).");
+			System.out.println(e + "ERROR: Unabe to fetch multiple ticket(s).");
 			Tickets errorTicket = new Tickets();
 			errorTicket.setError(e.toString());
 			errorList.add(errorTicket);
@@ -137,7 +143,8 @@ public class TicketServiceImpl implements TicketService {
 	}
 
 	@Override
-	public Tickets getSingleTicket(int ticketId) {
+	public Tickets getSingleTicket(int ticketId, Credentials credential) {
+
 		String result = apiAuthentication(credentials.getUsername(), credentials.getPassword(),
 				"https://" + credentials.getSubdomain() + ".zendesk.com/api/v2/tickets/" + ticketId + ".json");
 
@@ -146,28 +153,29 @@ public class TicketServiceImpl implements TicketService {
 		try {
 
 			JSONObject jsonObject = new JSONObject(result);
-			ticketObject = jsonObject.getJSONObject("ticket");
-			String dateStr = "";
-			Date date = new Date();
+			if (jsonObject.has("ticket")) {
+				ticketObject = jsonObject.getJSONObject("ticket");
+				String dateStr = "";
+				Date date = new Date();
 
-			try {
-				singleTicket.setId(ticketObject.getString("id"));
-				singleTicket.setSubject(ticketObject.getString("subject"));
-				singleTicket.setDescription(ticketObject.getString("description"));
-				singleTicket.setStatus(ticketObject.getString("status"));
-				singleTicket.setPriority(ticketObject.getString("priority"));
-				singleTicket.setRequester_id(ticketObject.getString("requester_id"));
-				date = dateFormat.parse(ticketObject.getString("updated_at"));
-				dateStr = date.toString();
-				singleTicket.setUpdated_at(dateStr);
-			} catch (ParseException e) {
-				System.out.println(e + "ERROR: There was an issue in ticket details");
+				try {
+					singleTicket.setId(ticketObject.getString("id"));
+					singleTicket.setSubject(ticketObject.getString("subject"));
+					singleTicket.setDescription(ticketObject.getString("description"));
+					singleTicket.setStatus(ticketObject.getString("status"));
+					singleTicket.setPriority(ticketObject.getString("priority"));
+					singleTicket.setRequester_id(ticketObject.getString("requester_id"));
+					date = dateFormat.parse(ticketObject.getString("updated_at"));
+					dateStr = date.toString();
+					singleTicket.setUpdated_at(dateStr);
+				} catch (ParseException e) {
+					System.out.println(e + "ERROR: There was an issue in ticket details");
+				}
 			}
-
 		} catch (
 
 		Exception e) {
-			System.out.println(e + "ERROR: Ooops! Error fetching ticket(s).");
+			System.out.println(e + "ERROR: Error fetching ticket.");
 			Tickets errorTicket = new Tickets();
 			errorTicket.setError(e.toString());
 			return errorTicket;
@@ -185,7 +193,7 @@ public class TicketServiceImpl implements TicketService {
 			JSONObject jsonObject = new JSONObject(result);
 			count = jsonObject.getJSONObject("count");
 		} catch (Exception e) {
-			System.out.println(e + " ERROR: Ooops! Something went wrong fetching your ticket(s).");
+			System.out.println(e + " ERROR: Something went wrong fetching count of tickets.");
 		}
 		return count.toString();
 	}
@@ -196,10 +204,11 @@ public class TicketServiceImpl implements TicketService {
 		String pageCountStr = getTicketCount();
 		JSONObject jsonPageObject = new JSONObject(pageCountStr);
 		int pageCountVal = 0;
-		if (jsonPageObject.getString("value") != null) {
-			pageCountVal = (int) Math.ceil(Float.parseFloat(jsonPageObject.getString("value")) / 100);
+		if (jsonPageObject.has("value")) {
+			if (jsonPageObject.getString("value") != null) {
+				pageCountVal = (int) Math.ceil(Float.parseFloat(jsonPageObject.getString("value")) / 100);
+			}
 		}
-
 		List<Tickets> multipleTicketsList = new ArrayList<>();
 		List<Tickets> errorList = new ArrayList<>();
 
@@ -241,13 +250,14 @@ public class TicketServiceImpl implements TicketService {
 				}
 
 			} catch (Exception e) {
-				System.out.println(e + "ERROR: Ooops! Error fetching ticket(s).");
+				System.out.println(e + "ERROR: Error fetching all ticket(s).");
 				Tickets errorTicket = new Tickets();
 				errorTicket.setError(e.toString());
 				errorList.add(errorTicket);
 				return errorList;
 			}
 		}
+
 		return multipleTicketsList;
 	}
 }

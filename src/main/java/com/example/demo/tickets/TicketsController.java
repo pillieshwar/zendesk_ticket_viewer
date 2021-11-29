@@ -20,6 +20,7 @@ public class TicketsController {
 
 	private TicketServiceImpl ticketService;
 	Credentials credentials = new Credentials();
+
 	@Autowired
 	public TicketsController(TicketServiceImpl ticketService) {
 		this.ticketService = ticketService;
@@ -30,6 +31,7 @@ public class TicketsController {
 			MediaType.APPLICATION_XML_VALUE }, produces = { MediaType.APPLICATION_JSON_VALUE,
 					MediaType.APPLICATION_XML_VALUE })
 	public String login(@RequestBody Credentials credential) {
+
 		credentials.setUsername(credential.getUsername());
 		credentials.setPassword(credential.getPassword());
 		credentials.setSubdomain(credential.getSubdomain());
@@ -55,7 +57,7 @@ public class TicketsController {
 	@GetMapping("/singleTicket")
 	@ResponseBody
 	public Tickets getSingleTickets(@RequestParam(required = false) int ticketId) {
-		return ticketService.getSingleTicket(ticketId);
+		return ticketService.getSingleTicket(ticketId, credentials);
 	}
 
 	@CrossOrigin
