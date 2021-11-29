@@ -1,6 +1,2 @@
-com/example/demo/tickets/Credentials.class
-com/example/demo/tickets/Tickets.class
 com/example/demo/ZendeskApplication.class
 com/example/demo/tickets/TicketServiceImpl.class
-com/example/demo/tickets/TicketService.class
-com/example/demo/tickets/TicketsController.class

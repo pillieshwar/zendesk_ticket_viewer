@@ -18,6 +18,10 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.tickets.model.Credentials;
+import com.example.demo.tickets.model.Tickets;
+import com.example.demo.tickets.service.TicketService;
+
 @Service
 public class TicketServiceImpl implements TicketService {
 	private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
@@ -39,13 +43,14 @@ public class TicketServiceImpl implements TicketService {
 
 			if (jsonObject.has("user")) {
 				ticketObject = jsonObject.getJSONObject("user");
-				if (ticketObject.getString("id") != null && ticketObject.getString("id") != "") {
-					System.out.println(ticketObject.get("id"));
+				if (!ticketObject.get("name").equals("Anonymous user")) {
 					return "success";
 				} else {
+					System.out.println("Enter Correct username/password");
 					return "false";
 				}
 			} else {
+				System.out.println("Enter correct subdomain");
 				return "false";
 			}
 		} catch (Exception e) {
@@ -143,7 +148,7 @@ public class TicketServiceImpl implements TicketService {
 	}
 
 	@Override
-	public Tickets getSingleTicket(int ticketId, Credentials credential) {
+	public Tickets getSingleTicket(int ticketId) {
 
 		String result = apiAuthentication(credentials.getUsername(), credentials.getPassword(),
 				"https://" + credentials.getSubdomain() + ".zendesk.com/api/v2/tickets/" + ticketId + ".json");

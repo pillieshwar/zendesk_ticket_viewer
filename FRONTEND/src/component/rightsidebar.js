@@ -41,6 +41,10 @@ export default function RightSideBar(props) {
       >
         <GridItem rowSpan={1} colSpan={14} bg="white">
           <Heading ml="3" mt="2" float="left" as="h3" size="md">
+            <Badge fontSize="lg" variant="outline" colorScheme="black">
+              #{apidata.id} -
+            </Badge>
+            &nbsp;
             {apidata.subject}
             <Badge ml="4" variant="outline" colorScheme="green">
               {apidata.status}

@@ -1,6 +1,6 @@
+/home/eshwar/Downloads/demo/src/main/java/com/example/demo/tickets/service/TicketService.java
 /home/eshwar/Downloads/demo/src/main/java/com/example/demo/tickets/TicketServiceImpl.java
 /home/eshwar/Downloads/demo/src/main/java/com/example/demo/ZendeskApplication.java
-/home/eshwar/Downloads/demo/src/main/java/com/example/demo/tickets/Credentials.java
-/home/eshwar/Downloads/demo/src/main/java/com/example/demo/tickets/TicketService.java
-/home/eshwar/Downloads/demo/src/main/java/com/example/demo/tickets/Tickets.java
-/home/eshwar/Downloads/demo/src/main/java/com/example/demo/tickets/TicketsController.java
+/home/eshwar/Downloads/demo/src/main/java/com/example/demo/tickets/model/Credentials.java
+/home/eshwar/Downloads/demo/src/main/java/com/example/demo/tickets/model/Tickets.java
+/home/eshwar/Downloads/demo/src/main/java/com/example/demo/tickets/controller/TicketsController.java

@@ -3,6 +3,8 @@ package com.example.demo.tickets;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.demo.tickets.model.Tickets;
+
 public class Constants {
 
 	public static String USERNAME = "dummyUsername";

@@ -9,12 +9,14 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import com.example.demo.tickets.controller.TicketsController;
+import com.example.demo.tickets.model.Credentials;
+import com.example.demo.tickets.model.Tickets;
 
 @SpringBootTest
 //@RunWith(MockitoJUnitRunner.class)
@@ -36,6 +38,7 @@ class TicketServiceTest {
 
 		when(ticketService.apiAuthentication(credentials.getUsername(), credentials.getPassword(),
 				credentials.getSubdomain())).thenReturn(Constants.COUNT);
+		when(ticketService.setCredentials(credentials)).thenReturn(Constants.SUCCESS);
 
 	}
 
@@ -43,6 +46,11 @@ class TicketServiceTest {
 	void testApiConnection() {
 		assertEquals(Constants.COUNT, ticketService.apiAuthentication(credentials.getUsername(),
 				credentials.getPassword(), credentials.getSubdomain()));
+	}
+
+	@Test
+	void testSetCredentials() {
+		assertEquals(Constants.SUCCESS, ticketService.setCredentials(credentials));
 	}
 
 	@Test
@@ -101,74 +109,74 @@ class TicketServiceTest {
 		assertNotEquals("negative test for quarter multiple tickets", ticketsController.getQuarterTickets("1", "1"));
 	}
 
-//	@Test
-//	void testGetSingleTicket() {
-//		Tickets ticket = new Tickets();
-//		ticket.setId(Integer.toString(1));
-//		ticket.setDescription("desc");
-//		ticket.setError("error");
-//		ticket.setPriority("priority");
-//		ticket.setRequester_id("12345");
-//		ticket.setStatus("status");
-//		ticket.setSubject("subject");
-//		ticket.setUpdated_at("date");
-//
-//		when(ticketService.getSingleTicket(0)).thenReturn(ticket);
-//		assertEquals(ticket, ticketsController.getSingleTickets(0));
-//	}
-//
-//	@Test
-//	void negativeTestGetSingleTicket() {
-//		Tickets ticket = new Tickets();
-//		ticket.setId(Integer.toString(1));
-//		ticket.setDescription("desc");
-//		ticket.setError("error");
-//		ticket.setPriority("priority");
-//		ticket.setRequester_id("12345");
-//		ticket.setStatus("status");
-//		ticket.setSubject("subject");
-//		ticket.setUpdated_at("date");
-//
-//		when(ticketService.getSingleTicket(0)).thenReturn(ticket);
-//		assertNotEquals("negative test case for single ticket", ticketsController.getSingleTickets(0));
-//	}
-//
-//	@Test
-//	void testGetAllTickets() throws JSONException {
-//		List<Tickets> tickets = new ArrayList<>();
-//		for (int i = 1; i <= 5; i++) {
-//			Tickets ticket = new Tickets();
-//			ticket.setId(Integer.toString(1));
-//			ticket.setDescription("desc");
-//			ticket.setError("error");
-//			ticket.setPriority("priority");
-//			ticket.setRequester_id("12345");
-//			ticket.setStatus("status");
-//			ticket.setSubject("subject");
-//			ticket.setUpdated_at("date");
-//			tickets.add(ticket);
-//		}
-//		when(ticketService.getAllTickets()).thenReturn(tickets);
-//		assertEquals(tickets, ticketsController.getAllTickets());
-//	}
-//
-//	@Test
-//	void negativeTestGetAllTickets() throws JSONException {
-//		List<Tickets> tickets = new ArrayList<>();
-//		for (int i = 1; i <= 5; i++) {
-//			Tickets ticket = new Tickets();
-//			ticket.setId(Integer.toString(1));
-//			ticket.setDescription("desc");
-//			ticket.setError("error");
-//			ticket.setPriority("priority");
-//			ticket.setRequester_id("12345");
-//			ticket.setStatus("status");
-//			ticket.setSubject("subject");
-//			ticket.setUpdated_at("date");
-//			tickets.add(ticket);
-//		}
-//		when(ticketService.getAllTickets()).thenReturn(tickets);
-//		assertNotEquals("negative test case for all tickets", ticketsController.getAllTickets());
-//	}
+	@Test
+	void testGetSingleTicket() {
+		Tickets ticket = new Tickets();
+		ticket.setId(Integer.toString(1));
+		ticket.setDescription("desc");
+		ticket.setError("error");
+		ticket.setPriority("priority");
+		ticket.setRequester_id("12345");
+		ticket.setStatus("status");
+		ticket.setSubject("subject");
+		ticket.setUpdated_at("date");
+
+		when(ticketService.getSingleTicket(0)).thenReturn(ticket);
+		assertEquals(ticket, ticketsController.getSingleTickets(0));
+	}
+
+	@Test
+	void negativeTestGetSingleTicket() {
+		Tickets ticket = new Tickets();
+		ticket.setId(Integer.toString(1));
+		ticket.setDescription("desc");
+		ticket.setError("error");
+		ticket.setPriority("priority");
+		ticket.setRequester_id("12345");
+		ticket.setStatus("status");
+		ticket.setSubject("subject");
+		ticket.setUpdated_at("date");
+
+		when(ticketService.getSingleTicket(0)).thenReturn(ticket);
+		assertNotEquals("negative test case for single ticket", ticketsController.getSingleTickets(0));
+	}
+
+	@Test
+	void testGetAllTickets() throws JSONException {
+		List<Tickets> tickets = new ArrayList<>();
+		for (int i = 1; i <= 5; i++) {
+			Tickets ticket = new Tickets();
+			ticket.setId(Integer.toString(1));
+			ticket.setDescription("desc");
+			ticket.setError("error");
+			ticket.setPriority("priority");
+			ticket.setRequester_id("12345");
+			ticket.setStatus("status");
+			ticket.setSubject("subject");
+			ticket.setUpdated_at("date");
+			tickets.add(ticket);
+		}
+		when(ticketService.getAllTickets()).thenReturn(tickets);
+		assertEquals(tickets, ticketsController.getAllTickets());
+	}
+
+	@Test
+	void negativeTestGetAllTickets() throws JSONException {
+		List<Tickets> tickets = new ArrayList<>();
+		for (int i = 1; i <= 5; i++) {
+			Tickets ticket = new Tickets();
+			ticket.setId(Integer.toString(1));
+			ticket.setDescription("desc");
+			ticket.setError("error");
+			ticket.setPriority("priority");
+			ticket.setRequester_id("12345");
+			ticket.setStatus("status");
+			ticket.setSubject("subject");
+			ticket.setUpdated_at("date");
+			tickets.add(ticket);
+		}
+		when(ticketService.getAllTickets()).thenReturn(tickets);
+		assertNotEquals("negative test case for all tickets", ticketsController.getAllTickets());
+	}
 
 }
