@@ -36,7 +36,7 @@ $ cd ../target
 $ java -jar demo-0.0.1-SNAPSHOT.jar
 ```
 
-## Functionality Implementation
+## Functionality Implemented
 
 * Connected to Zendesk API
 * Requested all tickets from Account
